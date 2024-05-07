@@ -9,6 +9,7 @@ class Customer_address extends Model
 {
     use HasFactory;
     protected $fillable=[
+        'uuid',
         "customer_id",
         "country_code",
         "address1",

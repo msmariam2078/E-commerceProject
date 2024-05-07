@@ -2,13 +2,13 @@
 
 namespace App\Models;
 use App\Models\Cat_item;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail 
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -18,9 +18,13 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        "name",
+        'uuid',
         "email",
         "password",
+        "is_admin",
+        "is_verified",
+        "verify_token"
+
     ];
     protected $appends=['cost'];
     /**
@@ -28,16 +32,17 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $casts = [
+    // protected $casts = [
        
-        'name' => 'string',
-        'email' => 'string',
-        'password' => 'string',
-        'email_verified_at' => 'datetime',
+    //     // 'name' => 'string',
+    //     'email' => 'string',
+    //     'password' => 'string',
+    //     'is_admin'=>'boolean',
+    //     'email_verified_at' => 'datetime',
        
         
        
-    ];
+    // ];
 
 
 
@@ -78,6 +83,9 @@ class User extends Authenticatable
      }
      return $total;
     }
+
+
+ 
 
 
 }

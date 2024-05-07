@@ -11,24 +11,25 @@ class Order_product extends Model
 
 
     protected $fillable=[
+        'uuid',
         "order_id",
         "product_id",
-        'quantity'
+        "quantity"
        
         ];
         
-        protected $casts = [
-            'product_id' => 'integer',
-            'order_id' => 'integer',
-            'quantity'=>"integer"
+    //     protected $casts = [
+    //         'product_id' => 'integer',
+    //         'order_id' => 'integer',
+    //         'quantity'=>"integer"
            
-     ];
+    //  ];
 
      public function order()
      {
          return $this->belongsTo(Order::class);
      }
-
+ 
 
      public function product()
      {

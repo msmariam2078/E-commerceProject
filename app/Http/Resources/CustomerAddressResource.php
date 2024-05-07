@@ -15,6 +15,7 @@ class CustomerAddressResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'uuid'=>$this->uuid,
             'type'=>$this->type,
             'address1'=>$this->address1,
             'address2'=>$this->address2,

@@ -16,9 +16,9 @@ class User_cartResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "name"=>$this->name,
+            
             "products"=>Cart_itemResource::collection($this->cart_items),
-            "total_cost"=>$this->cost,
+            "total_cost"=>$this->cost."$",
            
              ];
          }

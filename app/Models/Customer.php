@@ -9,6 +9,7 @@ class Customer extends Model
 {
     use HasFactory;
     protected $fillable=[
+        'uuid',
         "user_id",
         "phone",
         'password',
@@ -29,7 +30,14 @@ class Customer extends Model
             
            
         ];
-
+        protected $appends= [
+            'full'
+        ];
+        public function getFullAttribute()
+        {
+        
+         return $this->first_name." ".$this->last_name;;
+        }
         public function addresses()
         {
             return $this->hasMany(Customer_address::class);

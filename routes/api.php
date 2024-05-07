@@ -2,7 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Models\User;
+use App\Notifications\EmailVerifyNotification;
+use Illuminate\Support\Facades\Notification;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,45 +15,129 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+//  ,,,,,,,admin,,,,,,
 
 Route::middleware(['auth:sanctum',App\Http\Middleware\AdminMiddleware::class])->group(function () {
-   
-    Route::post('/add/products', [App\Http\Controllers\ProductController::class, 'store']);
-    Route::post('/edit/products/{id}', [App\Http\Controllers\ProductController::class, 'update']);
-    Route::get('/remove/product/{id}', [App\Http\Controllers\ProductController::class, 'destroy']);
-    Route::get('/remove/order', [App\Http\Controllers\ProductController::class, 'destroy']);
-    Route::get('/edit/statu/order', [App\Http\Controllers\ProductController::class, 'updsteStatu']);
-    
-   
-});
-Route::post('/view/products', [App\Http\Controllers\ProductController::class, 'index']);
-Route::get('/viewOne/product/{id}', [App\Http\Controllers\ProductController::class, 'show']);
+   //............prouducts
 
-Route::middleware(["auth:sanctum"])->group(function () {
+Route::prefix('products/')->controller(App\Http\Controllers\ProductController::class)->group(function(){
+
+   Route::post('add', 'store');
+   Route::post('edit', 'update');
+   Route::get('remove', 'destroy');
+   Route::get('active', 'activeProduct');
+
+});
+   
+   //.........orders
+   Route::prefix('orders/')->controller(App\Http\Controllers\OrderController::class)->group(function(){
+      Route::get('paid', 'paidOrder');
+      Route::post('views', 'index');
+   
+   });
+ 
+   //...........customers
+   Route::prefix('customers/')->controller(App\Http\Controllers\CustomerController::class)->group(function(){
+      Route::get('active', 'active');
+      Route::get('view', 'index');
+   
+   });
+
+});
+
+
+
+
+///////////////////user routes...............
+Route::middleware(["auth:sanctum",App\Http\Middleware\VerifyMiddleware::class])->group(function () {
   
-    //cart_routes
-    Route::post('/add/cart', [App\Http\Controllers\Cart_itemController::class, 'store']);   
-    Route::get('/show/cart', [App\Http\Controllers\Cart_itemController::class, 'show']); 
-    Route::get('/view/cart', [App\Http\Controllers\Cart_itemController::class, 'index']);   
-    Route::post('/update/cart', [App\Http\Controllers\Cart_itemController::class, 'updateQuantity']);   
-    Route::get('/remove/cart', [App\Http\Controllers\Cart_itemController::class, 'delete']);
+    //...user
+
+   Route::get('/cancel/user', [App\Http\Controllers\AuthController::class, 'destroy']);
      //customer_routes
    
     Route::get('/view/customer', [App\Http\Controllers\CustomerController::class, 'show']);
-    Route::post('/update/profile', [App\Http\Controllers\CustomerController::class, 'store']);
-  //order_routes
-  Route::get('/add/order', [App\Http\Controllers\OrderController::class, 'store']);
-  Route::get('/cancel/order', [App\Http\Controllers\OrderController::class, 'destroy']);
-});
-    //->middleware('auth:sanctum');
 
-    
-Route::get('/ff', [App\Http\Controllers\ProductController::class, 'ff']);
-Route::get('/cc', [App\Http\Controllers\ProductController::class, 'cc']);
-Route::post('/rigester', [App\Http\Controllers\AuthController::class, 'rigester']);
-Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
-Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout']);
+    Route::post('/update/profile', [App\Http\Controllers\CustomerController::class, 'update']);
+     //order_routes
+   Route::prefix('orders/')->controller(App\Http\Controllers\OrderController::class)->group(function(){
+   Route::get('add', 'store');
+   Route::get('view', 'show');
+   Route::post('view', 'index');
+   Route::get('cancel', 'cancel');
+   
+   });
+
+ //user
+ Route::post('/reset/password', [App\Http\Controllers\AuthController::class, 'resetPassword']);
+});
+
+
+//-------ghaust routes
+
+ //cart_routes
+
+ Route::prefix('cart/')->controller(App\Http\Controllers\Cart_itemController::class)->group(function(){
+   Route::get('show',  'show');
+   Route::post('add',  'store'); 
+   Route::post('update',  'updateQuantity');   
+   Route::get('remove',  'delete');
+   Route::get('view',  'index');
+   
+   });
+ 
+
+
+   Route::prefix('products/')->controller(App\Http\Controllers\ProductController::class)->group(function(){
+      Route::post('/view', 'index');
+
+      Route::get('/viewOne', 'show');
+      
+      Route::get('/bestselling', 'best_product');
+      
+      });
+
+
+
+
+ 
+
+
+
+  
+  
+
+////category...
+Route::prefix('categories/')->controller(App\Http\Controllers\CategoryController::class)->group(function(){
+   Route::get('viewOne',  'show'); 
+   Route::get('view' , 'index'); 
+   Route::post('search' , 'search'); 
+   
+   });
+
+//country
+Route::get('/view/countries', [App\Http\Controllers\CountryController::class, 'index']);
+//state
+Route::get('/view/countries/state', [App\Http\Controllers\StateController::class, 'index']);
+//auth
+Route::controller(App\Http\Controllers\AuthController::class)->group(function(){
+   Route::post('/rigester',  'rigester');
+   Route::post('/login',  'login');
+   Route::get('/logout',  'logout');
+   Route::post('/verified',  'verified');
+   Route::get('/resend',  'resend');
+   ///password
+   Route::post('/forget/password',  'forgetPassword');
+   Route::post('/verify/reset/password',  'verifyResetPassword');
+
+});
+
+//payment
+// Route::get('/checkout', [App\Http\Controllers\PaymentController::class, 'checkout']);
+// Route::get('/success', [App\Http\Controllers\PaymentController::class, 'success'])->name('success');
+// Route::get('/cancel', [App\Http\Controllers\PaymentController::class, 'cancel'])->name('cancel');
+
+
+
+
+

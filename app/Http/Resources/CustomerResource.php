@@ -14,14 +14,21 @@ class CustomerResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'uuid'=>$this->uuid,
             'user_name'=>$this->user_name,
-            "first_name"=>$this->first_name,
-            "lastt_name"=>$this->lastt_name,
+        
+            "full_name"=>$this->full,
             "email"=>$this->user->email,
        
             "phone_namber"=>$this->phone,
             'addresses'=>CustomerAddressResource::collection($this->addresses)
 
         ];
+    }
+
+
+    public function withResponse($request,$response)
+    {
+        $response->hreader('ff','value');
     }
 }

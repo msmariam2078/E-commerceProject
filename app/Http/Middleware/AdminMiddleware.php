@@ -5,9 +5,10 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Traits\GeneralTrait;
 class AdminMiddleware
-{
+{ 
+    use GeneralTrait;
 
 
    
@@ -24,9 +25,9 @@ class AdminMiddleware
         if(Auth::user() && Auth::user()->is_admin==true )
        { return $next($request);
     }
-     return response([
-        'massege'=>'you dont have permission to perform the action'
-     ]);
+     return $this->unAuthorizeResponse(
+        'you dont have permission to perform the action'
+     );
 
     }
 }

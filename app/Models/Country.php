@@ -22,9 +22,9 @@ class Country extends Model
             'code' => 'string',];
 
 
-            public function states()
+            public function products()
             {
-                return $this->hasMany(State::class);
+                return $this->hasMany(Product::class);
             }
 
 

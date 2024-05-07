@@ -16,9 +16,12 @@ class Cart_itemResource extends JsonResource
     {
     
         return [
-       "name"=>$this->product->title,
+        
+       "uuid"=>$this->product->uuid,
+       "title"=>$this->product->title,
        "price"=>$this->product->price,
-       "description"=>$this->product->desc,
+       "desc"=>$this->product->desc,
+
        "quantity"=>$this->quantity,
     //    "total_cost"=>UserResource::make($this->user),
 

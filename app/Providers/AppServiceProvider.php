@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Http\Resources\Json\JsonResource;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -11,6 +11,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
+
     public function register()
     {
         //
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+      
         //
     }
 }

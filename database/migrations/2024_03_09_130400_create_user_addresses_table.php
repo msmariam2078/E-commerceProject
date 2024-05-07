@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('user_addresses', function (Blueprint $table) {
+        Schema::create('customer_addresses', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid');
             $table->string('address1');
             $table->string('address2');
-            $table->unsignedBigInteger("user_id");
-            $table->foreign("user_id")->references("id")->on("users")->onDelete("CASCADE");
+            $table->unsignedBigInteger("customer_id");
+            $table->foreign("customer_id")->references("id")->on("customers")->onDelete("CASCADE");
             $table->enum('type',['shipping','billing']);
             $table->string("country_code");
             $table->foreign("country_code")->references("code")->on("countries")->onDelete("CASCADE");

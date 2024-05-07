@@ -18,7 +18,7 @@ class Payment extends Model
         ];
         
         protected $casts = [
-            'user_id' => 'interger',
+            'order_id' => 'interger',
             'type' => 'string',
             'status' => 'string',
             "amount"=>"decimal"

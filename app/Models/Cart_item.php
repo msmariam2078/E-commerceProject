@@ -10,22 +10,21 @@ class Cart_item extends Model
     use HasFactory;
   
     protected $fillable=[
-        "product_id",
+        'uuid',
         "user_id",
+        "product_id",
         "quantity"
        
        
         ];
         
-        protected $casts = [
-            'product_id' => 'integer',
-            'user_id' => 'integer',
-            'quantity' => 'integer',
+        // protected $casts = [
+        //     'product_id' => 'integer',
+        //     'user_id' => 'integer',
+        //     'quantity' => 'integer',
             
-           
-            
-           
-        ];
+          
+        // ];
         public function user()
         {
             return $this->belongsTo(User::class);
