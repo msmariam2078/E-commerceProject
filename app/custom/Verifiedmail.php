@@ -22,9 +22,9 @@ public function SendVerify( $email)
     $data['title']='veryfy email';
     $data['code']=$token;
     $data['email']=$email;
-    Mail::send('verify',['data'=>$data],function($massege) use($data){
-        $massege->to($data['email'])->subject($data['title']);
-    });
+    // Mail::send('verify',['data'=>$data],function($massege) use($data){
+    //     $massege->to($data['email'])->subject($data['title']);
+    // });
 
 return $token;
 

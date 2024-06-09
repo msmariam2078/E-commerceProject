@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('email')->unique();
             
 
-           
+           $table->string('userName');
             $table->string('password');
             $table->boolean('is_admin')->default(false);
             $table->boolean('is_verified')->default(false);

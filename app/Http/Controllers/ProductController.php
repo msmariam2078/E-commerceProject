@@ -273,68 +273,71 @@ public function destroy( Request $request)
 
     public function best_product(){
 
-    $categories=Category::all()->pluck('id')->toArray();
-    $ordered_products=Order_product::all();
-    if($ordered_products->isEmpty())
-    {
-        return $this->apiResponse('np results');
+// $products=Order_product::selectRaw('sum(quantity) as sum, product_id')->groupBy('product_id')->get();
+// //return $products;
+// $best_selling=[];
+// foreach($products as $product)
+// {
+
+// }
+// $products=product::all()->groupBy('category_id');
+// $pro=Order_product::selectRaw('sum(quantity) as sum, product_id')->groupBy('product_id')->get();
+// //return($pro);
+// //  return ($products);
+// foreach($products as $pro)
+// {
+//    return ($pro);
+
+
+
+// }
+
+$products=Order_product::with(['product' => function($query) {
+    $query->select('id',"category_id");
+}])->selectRaw("product_id,SUM(quantity) as total_quantity")->groupBy('product_id')->get();
+$elements=[];
+
+foreach($products as $product)
+{
+$found=false;
+foreach($elements as $key => $element)
+  { 
+if( $product['product']['category_id']== $key)
+{
+    $elements[$key][$product['product_id']]=$product['total_quantity'];
+    unset($product['product']);
+    $found=true;
+     break;}
+    
     }
-    $products=[];
-    foreach($ordered_products as $p) {
-        $found=false; 
-        foreach($products as &$pro)
-        {
-            foreach($pro as $k => $i)
-        if( $k ==$p->product_id)
-     {  $quantity= $pro[$k];
-        unset($pro[$k]); 
-        $pro[$k]=$p->quantity+ $quantity;
-        
-        $found=true;
-       break;
-        }
+
+   if(!$found)
+
+   {
+    $category_id=$product['product']['category_id'];
+    $product_id=$product['product_id'];
+    $product_quantity=$product['total_quantity'];
+    $elements[$category_id][$product_id]=$product_quantity;
+    unset($product['product']);
     }
 
-
-       if($found==false)
-        {   
-            foreach($categories as $e){
-                $category=Product::find($p->product_id)->category_id;
-                if($category==$e)
-                {
-                if(in_array($e,array_keys($products)))
-                {
-                 
-               $products[$e][$p->product_id]=$p->quantity;
-                 
-                }    
-                else{
-                $products[$e]=[
-                    $p->product_id=>$p->quantity ];
-                }  } }
-          
-          } }
-
-    $best_selling=[];
-    foreach($products as $key => $element)
-    {
-     $max=max($element);
-     $id_product=array_search($max,$element);
+}
+$best_seller=[];
+foreach($elements as $element)
+{
    
-     
-     $best_seller[]= $id_product;
-    }
- 
+    $max=max($element);
+    $best_seller[]=array_search($max,$element);
+}
+
  if($best_seller)
     { $products=Product::whereIn("id",$best_seller)->get();
      return   $this->apiResponse($products);
      }
 else  return   $this->apiResponse('no results');
 
-}
 
 
 
-
-
+    }
 }

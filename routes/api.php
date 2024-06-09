@@ -48,20 +48,19 @@ Route::prefix('products/')->controller(App\Http\Controllers\ProductController::c
 
 
 
-///////////////////user routes...............
+///////////////////verified user routes...............
 Route::middleware(["auth:sanctum",App\Http\Middleware\VerifyMiddleware::class])->group(function () {
   
     //...user
 
+
    Route::get('/cancel/user', [App\Http\Controllers\AuthController::class, 'destroy']);
      //customer_routes
    
-    Route::get('/view/customer', [App\Http\Controllers\CustomerController::class, 'show']);
 
-    Route::post('/update/profile', [App\Http\Controllers\CustomerController::class, 'update']);
      //order_routes
    Route::prefix('orders/')->controller(App\Http\Controllers\OrderController::class)->group(function(){
-   Route::get('add', 'store');
+   Route::post('add', 'store');
    Route::get('view', 'show');
    Route::post('view', 'index');
    Route::get('cancel', 'cancel');
@@ -73,9 +72,13 @@ Route::middleware(["auth:sanctum",App\Http\Middleware\VerifyMiddleware::class])-
 });
 
 
-//-------ghaust routes
 
- //cart_routes
+//////user routes..
+Route::middleware("auth:sanctum")->group(function () {
+
+   Route::get('/view/customer', [App\Http\Controllers\CustomerController::class, 'show']);
+   Route::post('/update/profile', [App\Http\Controllers\CustomerController::class, 'update']);
+    //cart_routes
 
  Route::prefix('cart/')->controller(App\Http\Controllers\Cart_itemController::class)->group(function(){
    Route::get('show',  'show');
@@ -85,6 +88,20 @@ Route::middleware(["auth:sanctum",App\Http\Middleware\VerifyMiddleware::class])-
    Route::get('view',  'index');
    
    });
+
+   Route::get('/resend',  [App\Http\Controllers\AuthController::class, 'resend'])->middleware("auth:sanctum");
+});
+   //...user
+
+
+
+  
+  
+
+ 
+//--ghaust routes
+
+
  
 
 
@@ -125,17 +142,17 @@ Route::controller(App\Http\Controllers\AuthController::class)->group(function(){
    Route::post('/login',  'login');
    Route::get('/logout',  'logout');
    Route::post('/verified',  'verified');
-   Route::get('/resend',  'resend');
+ 
    ///password
    Route::post('/forget/password',  'forgetPassword');
    Route::post('/verify/reset/password',  'verifyResetPassword');
-
+   Route::post('/verify/reset/forgetpassword',  'resetForgetPassword');
 });
 
 //payment
-// Route::get('/checkout', [App\Http\Controllers\PaymentController::class, 'checkout']);
-// Route::get('/success', [App\Http\Controllers\PaymentController::class, 'success'])->name('success');
-// Route::get('/cancel', [App\Http\Controllers\PaymentController::class, 'cancel'])->name('cancel');
+Route::get('/checkout', [App\Http\Controllers\PaymentController::class, 'checkout']);
+Route::get('/success', [App\Http\Controllers\PaymentController::class, 'success'])->name('success');
+Route::get('/cancel', [App\Http\Controllers\PaymentController::class, 'cancel'])->name('cancel');
 
 
 

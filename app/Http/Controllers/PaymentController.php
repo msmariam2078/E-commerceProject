@@ -7,7 +7,7 @@ use App\Models\Product;
 use App\Models\Order;
 use Stripe\Checkout\Session;
 class PaymentController extends Controller
-{
+{ 
    
     public function checkout()
     {

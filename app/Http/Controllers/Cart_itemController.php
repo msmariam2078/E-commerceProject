@@ -19,17 +19,14 @@ class Cart_itemController extends Controller
 {
      use GeneralTrait;
 
-     public function index (Request $request,CartManage $cartManage)
+     public function index (Request $request)
    {
 
     $user=auth('sanctum')->user();
-    if($user){
+ 
     $cart=User_cartResource::make($user);
-   return $this->apiResponse ($cart);}
-   else{
-    return $cartManage->getCartFromCookie();
-   
-   }
+   return $this->apiResponse ($cart);
+  
 
      }
 
@@ -52,30 +49,13 @@ class Cart_itemController extends Controller
        $cart_item=Cart_itemResource::make($cart_item);
 
         return $this->apiResponse ($cart_item);
-          }
-    else
-     {
-      $cart_items=json_decode($request->cookie('cart',"[]"),true) ;
-       foreach($cart_items as $item)
-       {
-        if($item['product_id']==$product->id)
-        {
-          $product=Product::find($product->id);
-          $produc['id']=$product->title;
-          $produc['title']=$product->title;
-          $produc['price']=$product->price;
-          $produc['desc']=$product->desc;
-          $produc['quantity']=$item['quantity'];
-          return $this->apiResponse ($produc);
-        }
-       }
-     }
+     
        }
 
+      }
 
 
-
-    public function store(Request $request,CartManage $cartManage)
+    public function store(Request $request)
   
     {   
 
@@ -87,35 +67,41 @@ class Cart_itemController extends Controller
         if($validate->fails()){
         return $this->requiredField($validate->errors()->first());    
         }
-        $user=auth('sanctum')->user();
+       
        $product=Product::where('uuid',$request->product_uuid)->first();
-        if($user) 
-       {
-     return  $cartManage->AddItemToDb($user,$product,$request->quantity);
+       $user=Auth::user();
+       
+       $cart_item=Cart_item::where(['user_id'=>$user->id,'product_id'=>$product->id])
+       ->first();
+    
+      if($cart_item){
+      $cart_item->quantity+=$request->quantity;
+      $cart_item->save();
+      return $this->apiResponse('the item has been added');
+   
+      }
+      else{
+      
+     $cart_item=Cart_item::create([
+     'uuid'=>Str::uuid(),
+    'user_id'=>$user->id,
+    'product_id'=>$product->id,
+    'quantity'=>$request->quantity
 
-       }
-  else{
-
-    return  $cartManage->AddItemToCookie($product,$request->quantity);
-
-     }
-
+    ]);
+    return $this->apiResponse('the item has been added');
+   }
 
     }
 
 
      
-//     public function cook(Request $request)
-// {//Cookie::queue(Cookie::forget('cart'));
-//   $cart_items=Cookie::get('cart') ;
-//   dd($cart_items);
-  
-// }
 
 
 
 
-   public function updateQuantity(Request $request,CartManage $cartManage){
+
+   public function updateQuantity(Request $request){
     $validate = Validator::make($request->all(),[
       'product_uuid' => 'required|exists:products,uuid',
       'quantity' => 'required|min:1|max:1000',
@@ -126,16 +112,16 @@ class Cart_itemController extends Controller
       $user=Auth::user();
       $product=Product::where('uuid',$request->product_uuid)->first();
     
-      if($user)
-    {
-      if($product)
-    return $cartManage->updateInDb($user,$product,$request->quantity);
-
-     }
-
-    else{
-      return $cartManage->updateInCookie( $product,$request->quantity) ;
+   
+      $cart_updated= Cart_item::where(['user_id'=>$user->id,'product_id'=>$product->id])->first();
+     
+      if( $cart_updated)
+      {$cart_updated->update(['quantity'=>$request->quantity]);
+        return $this->apiResponse('updated successfuly..');
       }
+      else return $this->apiResponse('this item doest exist') ;
+
+   
    
 
 
@@ -144,7 +130,7 @@ class Cart_itemController extends Controller
 
 
 
-   public function delete(Request $request,CartManage $cartManage){
+   public function delete(Request $request){
    
     $validate = Validator::make($request->all(),[
       'product_uuid' => 'required|exists:products,uuid',
@@ -156,9 +142,7 @@ class Cart_itemController extends Controller
 
       $product=Product::where('uuid',$request->product_uuid)->value("id");
       $user=Auth::user();
-      if($user)
-   
-  { $query= Cart_item::where(['user_id'=>$user->id,'product_id'=>$product])->first();
+     $query= Cart_item::where(['user_id'=>$user->id,'product_id'=>$product])->first();
     if($query)
     {
     $query->delete();
@@ -167,36 +151,9 @@ class Cart_itemController extends Controller
     }
     else{
       return $this->apiResponse('this item doest exist') ;
-    }}
-
-
-
-    else{
-
-      $cart_items=json_decode($request->cookie('cart',"[]"),true) ;
-  
-     $found=false;
- 
-     if(empty($cart_items))
-     return  $this->apiResponse ('cart is empty');
-      for($i=0; $i<=count($cart_items) ; $i++)
-      {
-    
-       if($cart_items[$i]['product_id']==$product)
-       {
-          unset($cart_items[$i]);
-        $found=true;
-         return $this->apiResponse ('deleted successfully')->cookie('cart',json_encode($cart_items));
-       }
-      
-      }
-
-     if(!$found)
-
- return $this->apiResponse('this item doest exist') ;
-
     }
-    
+
+
 
 
   
